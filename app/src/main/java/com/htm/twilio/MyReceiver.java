@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+
 public class MyReceiver extends BroadcastReceiver {
+    private ArrayList<String> messages = new ArrayList<>();
     private static final String TAG = MyReceiver.class.getSimpleName();
     public static final String pdu_type = "pdus";
 
@@ -56,10 +59,18 @@ public class MyReceiver extends BroadcastReceiver {
                 System.out.println("'"+msgs[i].getOriginatingAddress()+"'");
                 //if (msgs[i].getOriginatingAddress() == MainActivity.NUMUK) {
                 if (msgs[i].getOriginatingAddress().equals("+441797462034")){
-                    Log.d(TAG, "onReceive: " + strMessage);
-                    Toast.makeText(context, strMessage, Toast.LENGTH_LONG).show();
+                    //Log.d(TAG, "onReceive: " + strMessage);
+                    messages.add(msgs[i].getDisplayMessageBody());
+                    //Toast.makeText(context, strMessage, Toast.LENGTH_LONG).show();
                     try {
-                        MainActivity.getInstace().addText(msgs[i].getMessageBody(), false);
+                        //MainActivity.getInstace().addText(null, false, msgs);
+                        String text = msgs[i].getDisplayMessageBody();
+                        System.out.println(text);
+                        String lastChar = text.substring(text.length() - 1);
+                        System.out.println(lastChar);
+                        if (lastChar.equals("@")){
+                            MainActivity.getInstace().addText(null, false, messages);
+                        }
                     } catch (Exception e) {
                         System.out.println(e);
                     }

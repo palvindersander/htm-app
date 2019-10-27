@@ -5,10 +5,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.accessibilityservice.GestureDescription;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.telephony.SmsMessage;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,8 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,13 +48,20 @@ public class MainActivity extends AppCompatActivity {
         sendSMS = findViewById(R.id.sendSMS);
         smsHistory = findViewById(R.id.textView4);
         phoneNumber.setText(NUM);
+        Button clearButton = findViewById(R.id.button);
         smsHistory.setMovementMethod(new ScrollingMovementMethod());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         sendSMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //sendSMS(v);
+                sendSMS(smsMessage.getText().toString());
                 sendLocSMS();
+            }
+        });
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                smsHistory.setText("");
             }
         });
     }
@@ -61,12 +72,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //add text to screen
-    public void addText(String s, boolean b) {
+    public void addText(String s, boolean b, ArrayList<String> messages) {
         if (smsHistory != null) {
             if (b) {
-                smsHistory.setText("YOU:" + smsHistory.getText().toString() + s + "\n");
+                String line  = s;
+                String newLine = ((String[])line.split(":"))[2];
+                smsHistory.setText(smsHistory.getText().toString() + "YOU:  " + newLine + "\n");
             } else {
-                smsHistory.setText("TRAINSMS:" + smsHistory.getText().toString() + s + "\n");
+                //show msgs
+                //strip upto 37
+                String message = "";
+                for (String msg : messages){
+                    message += msg;
+                }
+                message = message.substring(37);
+                message = message.substring(0,message.length()-1);
+                String[] lines = message.split("=");
+                int i = 0;
+                for (String line : lines){
+                    if (i==0) {
+                        smsHistory.setText(smsHistory.getText().toString() + "TRAVELSMS:  " + line + "\n");
+                    }
+                    else {
+                        smsHistory.setText(smsHistory.getText().toString() + line + "\n");
+                    }
+                    i++;
+                }
             }
         }
     }
@@ -89,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                             simpleSMS newSMS = new simpleSMS(smsMessage.getText().toString(),phoneNumber.getText().toString());
                             newSMS.setLocation(loc);
                             String textMessage = newSMS.getLocText();
-                            if (newSMS.checkLocMessage(textMessage)) {
+                            if (newSMS.checkMessage(textMessage)) {
                                 sendSMS(textMessage);
                             }else {
                                 Toast.makeText(MainActivity.this, "please follow the correct SMS format: 'x to y'", Toast.LENGTH_SHORT).show();
@@ -140,14 +171,14 @@ public class MainActivity extends AppCompatActivity {
             simpleSMS newSMS = new simpleSMS(textMessage, phoneNumber);
             if (newSMS.checkInput(textMessage)) {
                 sender(phoneNumber, textMessage);
-                addText(textMessage, true);
+                addText(textMessage, true, null);
             }
         }
         else {
             simpleSMS newSMS = new simpleSMS(message, phoneNumber);
-            if (newSMS.checkLocMessage(message)) {
+            if (newSMS.checkMessage(message)) {
                 sender(phoneNumber,message);
-                addText(message, true);
+                addText(message, true, null);
             }
         }
     }

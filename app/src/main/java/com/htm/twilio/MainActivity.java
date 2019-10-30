@@ -23,12 +23,14 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String NUM = "01797462034";
-    public static final String NUMUK = "+441797462034";
+    public static final String NUM = "01625803004";
+    public static final String NUMUK = "+441625803004";
     private FusedLocationProviderClient fusedLocationClient;
     private static MainActivity ins;
     private EditText phoneNumber;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
         checkForSmsPermission();
         ins = this;
         phoneNumber = findViewById(R.id.editText);
+        TextView tv = findViewById(R.id.textView);
+        tv.setText("trainsms");
+        tv.setAllCaps(false);
         smsMessage = findViewById(R.id.editText2);
         sendSMS = findViewById(R.id.sendSMS);
         smsHistory = findViewById(R.id.textView4);
@@ -75,25 +80,24 @@ public class MainActivity extends AppCompatActivity {
     public void addText(String s, boolean b, ArrayList<String> messages) {
         if (smsHistory != null) {
             if (b) {
-                String line  = s;
-                String newLine = ((String[])line.split(":"))[2];
-                smsHistory.setText(smsHistory.getText().toString() + "YOU:  " + newLine + "\n");
+                String line = s;
+                String newLine = ((String[]) line.split(":"))[2];
+                smsHistory.setText(smsHistory.getText().toString() + "\n YOU:  " + newLine + "\n" + "\n");
             } else {
                 //show msgs
                 //strip upto 37
                 String message = "";
-                for (String msg : messages){
+                for (String msg : messages) {
                     message += msg;
                 }
                 message = message.substring(37);
-                message = message.substring(0,message.length()-1);
+                message = message.substring(0, message.length() - 1);
                 String[] lines = message.split("=");
                 int i = 0;
-                for (String line : lines){
-                    if (i==0) {
+                for (String line : lines) {
+                    if (i == 0) {
                         smsHistory.setText(smsHistory.getText().toString() + "TRAVELSMS:  " + line + "\n");
-                    }
-                    else {
+                    } else {
                         smsHistory.setText(smsHistory.getText().toString() + line + "\n");
                     }
                     i++;
@@ -117,19 +121,19 @@ public class MainActivity extends AppCompatActivity {
                         if (location != null) {
                             loc[0] = location.getLongitude();
                             loc[1] = location.getLatitude();
-                            simpleSMS newSMS = new simpleSMS(smsMessage.getText().toString(),phoneNumber.getText().toString());
+                            simpleSMS newSMS = new simpleSMS(smsMessage.getText().toString(), phoneNumber.getText().toString());
                             newSMS.setLocation(loc);
                             String textMessage = newSMS.getLocText();
                             if (newSMS.checkMessage(textMessage)) {
                                 sendSMS(textMessage);
-                            }else {
+                            } else {
                                 Toast.makeText(MainActivity.this, "please follow the correct SMS format: 'x to y'", Toast.LENGTH_SHORT).show();
                             }
-                        }else{
-                            simpleSMS newSMS = new simpleSMS(smsMessage.getText().toString(),phoneNumber.getText().toString());
+                        } else {
+                            simpleSMS newSMS = new simpleSMS(smsMessage.getText().toString(), phoneNumber.getText().toString());
                             if (newSMS.checkInput(smsMessage.getText().toString())) {
                                 sendSMS(smsMessage.getText().toString());
-                            }else {
+                            } else {
                                 Toast.makeText(MainActivity.this, "please follow the correct SMS format: 'x to y'", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -173,18 +177,17 @@ public class MainActivity extends AppCompatActivity {
                 sender(phoneNumber, textMessage);
                 addText(textMessage, true, null);
             }
-        }
-        else {
+        } else {
             simpleSMS newSMS = new simpleSMS(message, phoneNumber);
             if (newSMS.checkMessage(message)) {
-                sender(phoneNumber,message);
+                sender(phoneNumber, message);
                 addText(message, true, null);
             }
         }
     }
 
     //sends sms
-    private void sender( String number, String message) {
+    private void sender(String number, String message) {
         try {
             SmsManager smgr = SmsManager.getDefault();
             smgr.sendTextMessage(number, null, message, null, null);

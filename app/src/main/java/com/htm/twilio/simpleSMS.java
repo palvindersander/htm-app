@@ -47,20 +47,20 @@ public class simpleSMS {
 
     public boolean checkMessage(String message) {
         String[] locationSplit = message.split(":");
-        if (locationSplit.length == 3){
+        if (locationSplit.length == 3) {
             String[] toSplit = locationSplit[2].split(" to ");
             System.out.println("here1");
             System.out.println(toSplit.length);
-            if (toSplit.length == 2){
+            if (toSplit.length == 2) {
                 String[] inSplit = toSplit[1].split(" in ");
                 System.out.println("here2");
-                if (inSplit.length == 1){
+                if (inSplit.length == 1) {
                     return true;
                 }
-                if (inSplit.length == 2){
+                if (inSplit.length == 2) {
                     String[] spaceSplit = inSplit[1].split(" ");
-                    if (spaceSplit.length == 2){
-                        if (spaceSplit[1].equals("hours")){
+                    if (spaceSplit.length == 2) {
+                        if (spaceSplit[1].equals("hours")) {
                             return true;
                         }
                     }

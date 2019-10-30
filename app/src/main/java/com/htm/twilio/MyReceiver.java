@@ -56,9 +56,9 @@ public class MyReceiver extends BroadcastReceiver {
                 strMessage += "SMS from " + msgs[i].getOriginatingAddress();
                 strMessage += " :" + msgs[i].getMessageBody() + "\n";
                 // Log and display the SMS message.
-                System.out.println("'"+msgs[i].getOriginatingAddress()+"'");
+                System.out.println("'" + msgs[i].getOriginatingAddress() + "'");
                 //if (msgs[i].getOriginatingAddress() == MainActivity.NUMUK) {
-                if (msgs[i].getOriginatingAddress().equals("+441797462034")){
+                if (msgs[i].getOriginatingAddress().equals("+441625803004")) {
                     //Log.d(TAG, "onReceive: " + strMessage);
                     messages.add(msgs[i].getDisplayMessageBody());
                     //Toast.makeText(context, strMessage, Toast.LENGTH_LONG).show();
@@ -68,7 +68,7 @@ public class MyReceiver extends BroadcastReceiver {
                         System.out.println(text);
                         String lastChar = text.substring(text.length() - 1);
                         System.out.println(lastChar);
-                        if (lastChar.equals("@")){
+                        if (lastChar.equals("@")) {
                             MainActivity.getInstace().addText(null, false, messages);
                         }
                     } catch (Exception e) {
